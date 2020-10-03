@@ -21,6 +21,11 @@ library(gbm)
 # Introduction
 
 # Data
+```{r}
+# Read in data set
+dat <- read_csv("OnlineNewsPopularity.csv")
+dat <- dat %>% select(-url)
+```
 
 # Modeling
 
