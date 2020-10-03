@@ -1,0 +1,26 @@
+---
+title: "ST558 R Project II"
+author: "Mana Azizsoltani"
+date: "October 16, 2020"
+output: rmarkdown::github_document
+---
+
+```{r setup, include=FALSE}
+# Set seed for reproducibility
+set.seed(445)
+
+# Load necessary libraries
+library(knitr)
+library(caret)
+library(tidyverse)
+library(class)
+library(randomForest)
+library(gbm)
+```
+
+# Introduction
+
+# Data
+
+# Modeling
+
