@@ -16,6 +16,7 @@ library(tidyverse)
 library(class)
 library(randomForest)
 library(gbm)
+library(corrplot)
 ```
 
 # Introduction
@@ -25,7 +26,27 @@ library(gbm)
 # Read in data set
 dat <- read_csv("OnlineNewsPopularity.csv")
 dat <- dat %>% select(-url)
+mon <- dat %>% filter(weekday_is_monday == 1) %>% select(-starts_with("weekday_is_"))
+
+# Try and weed out correlated variables
+cor(mon)
 ```
 
 # Modeling
+
+```{r}
+index <- createDataPartition(mon$shares, p = .75, list = F) %>% as.vector()
+train <- mon[index,]
+test <- mon[-index,]
+
+# Specify CV method
+trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+
+# Fit Random Forest
+rf <- train(shares ~., data = train, method = "rf",
+            trControl=trctrl, preProcess = c("center", "scale"),
+            tuneGrid = data.frame(mtry = 1:dim(mon)[2]))
+
+
+```
 
