@@ -5,7 +5,7 @@ date: "October 16, 2020"
 output: rmarkdown::github_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, message=FALSE}
 # Set seed for reproducibility
 set.seed(445)
 
@@ -22,7 +22,7 @@ library(corrplot)
 # Introduction
 
 # Data
-```{r}
+```{r, message=FALSE}
 # Read in data set
 dat <- read_csv("OnlineNewsPopularity.csv")
 dat <- dat %>% select(-url)
