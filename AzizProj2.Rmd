@@ -18,6 +18,7 @@ library(randomForest)
 library(gbm)
 library(corrplot)
 library(klaR)
+library(Rdimtools)
 ```
 
 # Introduction
@@ -26,30 +27,36 @@ library(klaR)
 ```{r, message=FALSE}
 # Read in data set
 dat <- read_csv("OnlineNewsPopularity.csv")
-dat <- dat %>% select(-url)
-mon <- dat %>% filter(weekday_is_monday == 1) %>% select(-starts_with("weekday_is_"))
-
-# Try and weed out correlated variables
-C <- cor(mon)
 ```
 
 # Modeling
 
 ```{r}
-index <- createDataPartition(mon$shares, p = .7, list = F) %>% as.vector()
-train <- mon[index,]
-test <- mon[-index,]
+vars <- c(7, 14, 16:19, 25:27, 36:41, 43:45, 49, 56, 61)
+index <- createDataPartition(dat$shares, p = .7, list = F) %>% as.vector()
+train <- dat[index,vars]
+test <- dat[-index,vars]
 
 # Specify CV method
 trctrl <- trainControl(method = "cv", number = 5)
 
 # Fit Random Forest
-rf <- train(shares ~., data = test, method = "rf",
+treeFit <- train(shares ~., data = train, method = "rpart",
+                 trControl=trctrl, preProcess = c("center", "scale"))
+
+rf <- train(shares ~., data = train, method = "rf",
             trControl=trctrl, preProcess = c("center", "scale"),
-            verbose = FALSE, tuneGrid = data.frame(mtry = 20),
-            importance = TRUE)
-pred <- predict(rf, newdata = train[1:400,])
-postResample(pred, train[1:400,]$shares)
+            verbose = FALSE, importance = TRUE)
+rfPred <- predict(rf, newdata = test)
+rfRMSE <- sqrt(mean((rfPred-test$shares)^2))
 rf
+
+treebagFit <- train(shares ~., data = train, method = "treebag",
+                    trControl=trctrl, preProcess = c("center", "scale"))
+
+boostFit <- train(shares ~., data = train, method = "gbm",
+                  trControl = trctrl, preProcess = c("center", "scale"),
+                  verbose = FALSE, tuneGrid = gbmGrid)
+
 ```
 
