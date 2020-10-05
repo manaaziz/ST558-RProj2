@@ -3,6 +3,8 @@ title: "ST558 R Project II"
 author: "Mana Azizsoltani"
 date: "October 16, 2020"
 output: rmarkdown::github_document
+params:  
+  day: "monday"
 ---
 
 ```{r setup, include=FALSE, message=FALSE}
@@ -11,6 +13,7 @@ set.seed(445)
 
 # Load necessary libraries
 library(knitr)
+library(rmarkdown)
 library(caret)
 library(tidyverse)
 library(class)
@@ -18,45 +21,67 @@ library(randomForest)
 library(gbm)
 library(corrplot)
 library(klaR)
-library(Rdimtools)
 ```
 
 # Introduction
 
 # Data
+First things first, we need to read in the data and filter the data for param$day.
 ```{r, message=FALSE}
 # Read in data set
 dat <- read_csv("OnlineNewsPopularity.csv")
+
+# Subset the data set by day
+dayvar <- as.name(paste0("weekday_is_", params$day))
+
+day.dat <- dat %>% filter((!!sym(dayvar)) == 1)
 ```
 
 # Modeling
+## Data Partitioning
+Before creating the models, we must split the data into a training and test data set in order to later evaluate the model's prediction accuracy. In this case we will be using a 70/30 split, training the data on the 70% and testing the trained models on the 30%.  
 
-```{r}
-vars <- c(7, 14, 16:19, 25:27, 36:41, 43:45, 49, 56, 61)
-index <- createDataPartition(dat$shares, p = .7, list = F) %>% as.vector()
-train <- dat[index,vars]
-test <- dat[-index,vars]
+```{r datasplit}
+vars <- c(7, 14, 16:18, 26:27, 36:39, 41, 43:44, 61)
+index <- createDataPartition(day.dat$shares, p = .7, list = F) %>% as.vector()
+train <- day.dat[index,vars]
+test <- day.dat[-index,vars]
+```
 
+## Regression Tree
+
+```{r tree}
 # Specify CV method
-trctrl <- trainControl(method = "cv", number = 5)
+trctrl <- trainControl(method = "LOOCV")
 
-# Fit Random Forest
+# Normal Regression Tree
 treeFit <- train(shares ~., data = train, method = "rpart",
-                 trControl=trctrl, preProcess = c("center", "scale"))
+                 trControl=trctrl)
+treePred <- predict(treeFit, newdata = test)
+treeRMSE <- sqrt(mean((treePred-test$shares)^2))
+```
+The final regression tree model that I selected was the model with a Cp value of `r round(unname(treeFit$bestTune[1,1]), 5)`.
 
-rf <- train(shares ~., data = train, method = "rf",
-            trControl=trctrl, preProcess = c("center", "scale"),
-            verbose = FALSE, importance = TRUE)
-rfPred <- predict(rf, newdata = test)
-rfRMSE <- sqrt(mean((rfPred-test$shares)^2))
-rf
+## Boosted Tree
 
-treebagFit <- train(shares ~., data = train, method = "treebag",
-                    trControl=trctrl, preProcess = c("center", "scale"))
-
+```{r boost}
+# Boosted Regression Tree
+trctrl2 <- trainControl(method = "cv", number = 5)
 boostFit <- train(shares ~., data = train, method = "gbm",
-                  trControl = trctrl, preProcess = c("center", "scale"),
-                  verbose = FALSE, tuneGrid = gbmGrid)
+                  trControl = trctrl2, preProcess = c("center", "scale"),
+                  verbose = FALSE)
+boostPred <- predict(boostFit, newdata = test)
+boostRMSE <- sqrt(mean((boostPred-test$shares)^2))
+```
+
+The final boosted tree model that I selected was the model with the following tune of the parameters:
+```{r boostbest, echo=FALSE}
+boostFit$bestTune
+```
+
+## Model Comparison
+```{r RMSEtbl, echo=FALSE}
 
 ```
+
 
