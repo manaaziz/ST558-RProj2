@@ -34,27 +34,24 @@ The online news data set that we will be working with for this project was found
 ## Variable Descriptions  
 The variables that I will be using are the following (more on selection later):  
 
-7. num_hrefs: Number of links  
-14. data_channel_is_entertainment: Is data channel 'Entertainment'?  
-16. data_channel_is_socmed: Is data channel 'Social Media'?  
-17. data_channel_is_tech: Is data channel 'Tech'?  
-18. data_channel_is_world: Is data channel 'World'?  
-19. kw_min_min: Worst keyword (min. shares)  
-25. kw_min_avg: Avg. keyword (min. shares)  
-26. kw_max_avg: Avg. keyword (max. shares)  
-27. kw_avg_avg: Avg. keyword (avg. shares)  
-36. weekday_is_saturday: Was the article published on a Saturday?  
-37. weekday_is_sunday: Was the article published on a Sunday?  
-38. is_weekend: Was the article published on the weekend?  
-39. LDA_00: Closeness to LDA topic 0  
-40. LDA_01: Closeness to LDA topic 1  
-41. LDA_02: Closeness to LDA topic 2  
-43. LDA_04: Closeness to LDA topic 4  
-44. global_subjectivity: Text subjectivity  
-45. global_sentiment_polarity: Text sentiment polarity  
-49. rate_negative_words: Rate of negative words among non-neutral tokens  
-56. title_subjectivity: Title subjectivity  
-60. shares: Number of shares (target)  
+1. num_hrefs: Number of links  
+2. data_channel_is_entertainment: Is data channel 'Entertainment'?  
+3. data_channel_is_socmed: Is data channel 'Social Media'?  
+4. data_channel_is_tech: Is data channel 'Tech'?  
+5. data_channel_is_world: Is data channel 'World'?  
+6. kw_min_min: Worst keyword (min. shares)  
+7. kw_min_avg: Avg. keyword (min. shares)  
+8. kw_max_avg: Avg. keyword (max. shares)  
+9. kw_avg_avg: Avg. keyword (avg. shares)  
+10. LDA_00: Closeness to LDA topic 0  
+11. LDA_01: Closeness to LDA topic 1  
+12. LDA_02: Closeness to LDA topic 2  
+13. LDA_04: Closeness to LDA topic 4  
+14. global_subjectivity: Text subjectivity  
+15. global_sentiment_polarity: Text sentiment polarity  
+16. rate_negative_words: Rate of negative words among non-neutral tokens  
+17. title_subjectivity: Title subjectivity  
+18. shares: Number of shares (target)  
 
 ## Purpose and Methods  
 The purpose of this analysis is to predict the number of shares of a particular article using tree-based machine learning techniques. In particular, we will be using a normal (non-ensemble) regression tree and a boosted tree model to attempt to predict the number of shares. This process will be done for each day of the week.  
@@ -72,21 +69,24 @@ day.dat <- dat %>% filter((!!sym(dayvar)) == 1)
 ```  
 
 ## Variable Selection  
-After reading the article attached to the UCI Machine Learning website where we got the data, I decided to use the same technique as Dr. Ren and Dr. Yang as discussed in [their paper](http://cs229.stanford.edu/proj2015/328_report.pdf). They calculated the Fisher score for each feature and selected the 20 with the highest Fisher scores. The Fisher score (for data with two classes) for the $j^{\text{th}}$ feature is given by:  
+After reading the article attached to the UCI Machine Learning website where we got the data, I decided to use the same technique as Dr. Ren and Dr. Yang as discussed in [their paper](http://cs229.stanford.edu/proj2015/328_report.pdf). They calculated the Fisher score for each feature and selected the 20 with the highest Fisher scores. The Fisher score for the $j^{\text{th}}$ feature is given by:  
+
 $$F(j) =  \frac{(\bar{x}^1_j - \bar{x}^2_j)^2}{(s^1_j)^2 + (s^2_j)^2},$$  
 where  
 $$(s^k_j)^2 = \sum_{x \in X^k}(x_j - \bar{x}^k_j)^2$$  
 
 The top variables with the highest Fisher scores were the following:  
+
 ```{r fscores, echo=FALSE}
 knitr::include_graphics("/Users/mana010/Downloads/fscores.png")
-```  
-All that being said, I used these 20 variables as my predictors in my models. This is also consistent with what we learned in the lectures about how many predictors to use in a regression tree, which is $\frac{1}{3}(\text{# of predictors})$ = 20 in this case.  
+```   
 
-## Data Partitioning  
+All that being said, I used 17 of these 20 variables as my predictors in my models, since the `is_-day` variables are irrelevant if we are doing the reports by day. This is also consistent with what we learned in the lectures about how many predictors to use in a regression tree, which is $\frac{1}{3}(\text{# of predictors})$ = 20 in this case.  
+
+## Partitioning  
 Before creating the models, we must split the data into a training and test data set in order to later evaluate the model's prediction accuracy. In this case we will be using a 70/30 split, training the data on the 70% and testing the trained models on the 30%.    
 ```{r datasplit}
-vars <- c(7, 14, 16:19, 25:27, 36:41, 43:45, 49, 56, 60)
+vars <- c(7, 14, 16:19, 25:27, 39:41, 43:45, 49, 56, 60)
 index <- createDataPartition(day.dat$shares, p = .7, list = F) %>% as.vector()
 train <- day.dat[index,vars]
 test <- day.dat[-index,vars]
@@ -130,14 +130,15 @@ gg4 <- ggplot(data = train, aes(x = data_channel_is_socmed)) + geom_bar() +
 grid.arrange(gg1, gg2, gg3, gg4, nrow = 2)
 ```  
 
-Then I looked at the numeric summaries of some of the quantitative variables as well as contingency tables of the qualitative variables.  
+Then I looked at the numeric summaries of some of the quantitative variables as well as contingency tables of the qualitative variables. I wanted to get an idea of the range and distribution of the variables.  
 ```{r, echo=FALSE}
-summary(train[,c(1, 9, 15, 17, 18)])
+summary(train[,c(1, 9, 12, 14, 15)])
 ```  
 
 ```{r, echo=FALSE}
 df2 <- apply(train[,c(2:5)], MARGIN = 2, FUN = "table")
 colnames(df2) <- c("is ent.", "is soc. med.", "is tech", "is world")
+rownames(df2) <- c("No", "Yes")
 kable(df2)
 ```  
 
@@ -155,7 +156,7 @@ treeFit <- train(shares ~., data = train, method = "rpart",
                  trControl=trctrl)
 treePred <- predict(treeFit, newdata = test)
 treeRMSE <- sqrt(mean((treePred-test$shares)^2))
-```
+```  
 The final regression tree model that I selected was the model with a Cp value of `r round(unname(treeFit$bestTune[1,1]), 5)`.  
 
 ## Boosted Tree
@@ -182,5 +183,5 @@ colnames(tbl.rmse) <- "RMSE"
 rownames(tbl.rmse) <- c("Reg. Tree", "Boost Tree")
 kable(tbl.rmse, caption = "Comparison of Models' RMSE")
 ```  
-After evaluating the predictions of the test data set from each model, the basic regression tree had an RMSE of `r tbl.rmse[1,1]` and the boosted tree model had an RMSE of `r tbl.rmse[2,1]`. I expected the boosted tree to have a lower RMSE, since we learned that ensemble trees tend to outperform single trees in terms of prediction.
+After evaluating the predictions of the test data set from each model, the basic regression tree had an RMSE of `r round(tbl.rmse[1,1])` and the boosted tree model had an RMSE of `r round(tbl.rmse[2,1])`. I expected the boosted tree to have a lower RMSE, since we learned that ensemble trees tend to outperform single trees in terms of prediction.
 
