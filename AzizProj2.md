@@ -93,14 +93,13 @@ where
 
 The top variables with the highest Fisher scores were the following:
 
-<img src="/Users/mana010/Downloads/fscores.png" width="570" />
+<img src="fscores.png" width="570" />
 
 All that being said, I used 17 of these 20 variables as my predictors in
 my models, since the `is_day` variables are irrelevant if we are doing
 the reports by day. This is also consistent with what we learned in the
 lectures about how many predictors to use in a regression tree, which is
-![\\frac{1}{3}](https://latex.codecogs.com/png.latex?%5Cfrac%7B1%7D%7B3%7D
-"\\frac{1}{3}")(\# of predictors) = 20 in this case.
+one-third of the total number of predictors, or 20 in this case.
 
 ## Partitioning
 

@@ -79,7 +79,7 @@ $$(s^k_j)^2 = \sum_{x \in X^k}(x_j - \bar{x}^k_j)^2$$
 The top variables with the highest Fisher scores were the following:  
 
 ```{r fscores, echo=FALSE}
-knitr::include_graphics("/Users/mana010/Downloads/fscores.png")
+knitr::include_graphics("fscores.png")
 ```   
 
 All that being said, I used 17 of these 20 variables as my predictors in my models, since the `is_day` variables are irrelevant if we are doing the reports by day. This is also consistent with what we learned in the lectures about how many predictors to use in a regression tree, which is one-third of the total number of predictors, or 20 in this case.  
