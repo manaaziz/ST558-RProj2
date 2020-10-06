@@ -26,3 +26,11 @@ This repository is for the second project of ST558 where we are to use two tree-
   * `klaR`  
 
 # Render Function  
+```
+dayofweek <- c("monday", "tuesday", "wednesday", "thursday",
+               "friday", "saturday", "sunday")
+output_file <- paste0(dayofweek, "Analysis", ".md")
+params = lapply(dayofweek, FUN = function(x){list(day = x)})
+reports <- tibble(output_file, params)
+apply(reports, MARGIN = 1, FUN = function(x){render(input = "AzizProj2.Rmd", output_file = x[[1]], params = x[[2]])})
+```

@@ -8,7 +8,7 @@ output:
     toc_depth: 1
     pandoc_args: --webtex
 params:  
-  day: "monday"
+    day: "monday"
 ---
 
 ```{r setup, include=FALSE, message=FALSE}
