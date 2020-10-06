@@ -13,6 +13,7 @@ set.seed(445)
 
 # Load necessary libraries
 library(knitr)
+library(gridExtra)
 library(rmarkdown)
 library(caret)
 library(tidyverse)
@@ -27,7 +28,7 @@ library(klaR)
 ## Online News Data Set
 The online news data set that we will be working with for this project was found on the UCI Machine Learning Repository. The data itself comes from the popular online news website, Mashable. Each observation of the data set represents a single article released by Mashable during the period from January 7, 2013 and January 7, 2015. Each of the 39644 articles has 60 attributes that describes the different aspects of each article.
 
-## Variables
+## Variable Descriptions
 The variables that I will be using are the following (more on selection later):
 
 7. num_hrefs: Number of links  
@@ -50,12 +51,14 @@ The variables that I will be using are the following (more on selection later):
 45. global_sentiment_polarity: Text sentiment polarity  
 49. rate_negative_words: Rate of negative words among non-neutral tokens  
 56. title_subjectivity: Title subjectivity  
-60. shares: Number of shares (target)
+60. shares: Number of shares (target)  
 
+## Purpose and Methods
+The purpose of this analysis is to predict the number of shares of a particular article using tree-based machine learning techniques. In particular, we will be using a normal (non-ensemble) regression tree and a boosted tree model to attempt to predict the number of shares. This process will be done for each day of the week.
 
 # Data
 ## Reading in the Data
-First things first, we need to read in the data and filter the data for param$day.  
+First things first, we need to read in the data and filter the data for `r str_to_title(params$day)`.  
 ```{r, message=FALSE}
 # Read in data set
 dat <- read_csv("OnlineNewsPopularity.csv") %>% dplyr::select(-url)
@@ -80,14 +83,14 @@ All that being said, I used these 20 variables as my predictors in my models. Th
 ## Data Partitioning
 Before creating the models, we must split the data into a training and test data set in order to later evaluate the model's prediction accuracy. In this case we will be using a 70/30 split, training the data on the 70% and testing the trained models on the 30%.  
 ```{r datasplit}
-vars <- c(7, 14, 16:18, 26:27, 36:39, 41, 43:44, 61)
+vars <- c(7, 14, 16:18, 26:27, 36:39, 41, 43:44, 60)
 index <- createDataPartition(day.dat$shares, p = .7, list = F) %>% as.vector()
 train <- day.dat[index,vars]
 test <- day.dat[-index,vars]
 ```
 
 # Summarization
-To get an idea of what we are working with when considering this data, we want to get some summaries of the data. Firstly, I wanted to see how much of the data pertained to each day.
+To get an idea of what we are working with when considering this data, we want to get some summaries of the data. Before looking at the training data, I wanted to see how much of the data pertained to each day.
 ```{r plot1, echo=FALSE}
 counts <- round(colSums(dat[,31:37])/nrow(dat)*100, 1)
 DOW <- c("Monday", "Tuesday", "Wednesday", "Thursday",
@@ -100,6 +103,31 @@ ggplot(data = df.counts, aes(x = Day, y = counts)) + geom_bar(stat = "identity",
   scale_y_continuous(limits = c(0, 22)) + geom_text(aes(label=counts), vjust = 1.6, color = "white", size = 4)
 
 ```
+
+Next, I went ahead and looked at summaries of the four variables with the highest Fisher Scores. The case of the quantitative variables, I plotted them on a scatter plot against `shares`, and for the qualitative variables, I just whipped up a bar plot to get a breakdown of the training data.
+```{r sctrs, message=FALSE, echo=FALSE, warning=FALSE}
+train2 <- train %>% filter(shares < max(shares))
+max(train$shares)
+
+gg1 <- ggplot(data = train2, aes(x = (kw_avg_avg-mean(kw_avg_avg))/sd(kw_avg_avg),
+                                 y = (shares-mean(shares))/sd(shares))) + geom_point() +
+         labs(y = "Shares (Standardized)", x = "Avg. Keyword (Standardized)", title = "Shares vs. Avg. Keyword")
+
+gg2 <- ggplot(data = train2, aes(x = LDA_02, y = shares)) + geom_point() + 
+         labs(x = "Closeness to LDA topic 2", y = "Shares", title = "Shares vs. LDA_02")
+
+gg3 <- ggplot(data = train, aes(x = data_channel_is_world)) + geom_bar() + 
+         scale_x_discrete(limits = c(0,1), labels = c("Not World Channel", "World Channel")) + 
+         labs(x = "Is data channel 'World'?", y = "Count", title = "Is World Channel Breakdown")
+
+gg4 <- ggplot(data = train, aes(x = data_channel_is_socmed)) + geom_bar() + 
+         scale_x_discrete(limits = c(0,1), labels = c("Not S.M. Channel", "S.M. Channel")) + 
+         labs(x = "Is data channel 'Social Media'?", y = "Count", title = "Is Social Media Channel Breakdown")
+
+grid.arrange(gg1, gg2, gg3, gg4, nrow = 2)
+```
+
+
 
 
 # Modeling
