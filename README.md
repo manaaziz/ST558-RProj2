@@ -5,13 +5,13 @@ This repository is for the second project of ST558 where we are to use two tree-
 
 # Links to Sub-Documents  
 
-  * [Monday]()  
-  * [Tuesday]()  
-  * [Wednesday]()  
-  * [Thursday]()  
-  * [Friday]()  
-  * [Saturday]()  
-  * [Sunday]()    
+  * [Monday](mondayAnalysis.md)  
+  * [Tuesday](tuesdayAnalysis.md)  
+  * [Wednesday](wednesdayAnalysis.md)  
+  * [Thursday](thursdayAnalysis.md)  
+  * [Friday](fridaydayAnalysis.md)  
+  * [Saturday](saturdayAnalysis.md)  
+  * [Sunday](sundayAnalysis.md)    
 
 # Required Packages  
 
