@@ -128,9 +128,6 @@ the highest Fisher Scores. The case of the quantitative variables, I
 plotted them on a scatter plot against `shares`, and for the qualitative
 variables, I just whipped up a bar plot to get a breakdown of the
 training data.
-
-    ## [1] 843300
-
 ![](wednesdayAnalysis_files/figure-gfm/sctrs-1.png)<!-- -->
 
 Then I looked at the numeric summaries of some of the quantitative

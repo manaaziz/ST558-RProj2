@@ -111,7 +111,6 @@ ggplot(data = df.counts, aes(x = Day, y = counts)) + geom_bar(stat = "identity",
 Next, I went ahead and looked at summaries of the four variables with the highest Fisher Scores. The case of the quantitative variables, I plotted them on a scatter plot against `shares`, and for the qualitative variables, I just whipped up a bar plot to get a breakdown of the training data.
 ```{r sctrs, message=FALSE, echo=FALSE, warning=FALSE}
 train2 <- train %>% filter(shares < max(shares))
-max(train$shares)
 
 gg1 <- ggplot(data = train2, aes(x = (kw_avg_avg-mean(kw_avg_avg))/sd(kw_avg_avg),
                                  y = (shares-mean(shares))/sd(shares))) + geom_point() +
