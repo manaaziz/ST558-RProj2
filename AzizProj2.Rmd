@@ -6,6 +6,7 @@ output:
   rmarkdown::github_document:
     toc: true
     toc_depth: 1
+    pandoc_args: --webtex
 params:  
   day: "monday"
 ---
@@ -81,7 +82,7 @@ The top variables with the highest Fisher scores were the following:
 knitr::include_graphics("/Users/mana010/Downloads/fscores.png")
 ```   
 
-All that being said, I used 17 of these 20 variables as my predictors in my models, since the `is_-day` variables are irrelevant if we are doing the reports by day. This is also consistent with what we learned in the lectures about how many predictors to use in a regression tree, which is $\frac{1}{3}(\text{# of predictors})$ = 20 in this case.  
+All that being said, I used 17 of these 20 variables as my predictors in my models, since the `is_day` variables are irrelevant if we are doing the reports by day. This is also consistent with what we learned in the lectures about how many predictors to use in a regression tree, which is one-third of the total number of predictors, or 20 in this case.  
 
 ## Partitioning  
 Before creating the models, we must split the data into a training and test data set in order to later evaluate the model's prediction accuracy. In this case we will be using a 70/30 split, training the data on the 70% and testing the trained models on the 30%.    

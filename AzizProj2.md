@@ -25,28 +25,25 @@ article.
 The variables that I will be using are the following (more on selection
 later):
 
-7.  num\_hrefs: Number of links  
-8.  data\_channel\_is\_entertainment: Is data channel ‘Entertainment’?  
-9.  data\_channel\_is\_socmed: Is data channel ‘Social Media’?  
-10. data\_channel\_is\_tech: Is data channel ‘Tech’?  
-11. data\_channel\_is\_world: Is data channel ‘World’?  
-12. kw\_min\_min: Worst keyword (min. shares)  
-13. kw\_min\_avg: Avg. keyword (min. shares)  
-14. kw\_max\_avg: Avg. keyword (max. shares)  
-15. kw\_avg\_avg: Avg. keyword (avg. shares)  
-16. weekday\_is\_saturday: Was the article published on a Saturday?  
-17. weekday\_is\_sunday: Was the article published on a Sunday?  
-18. is\_weekend: Was the article published on the weekend?  
-19. LDA\_00: Closeness to LDA topic 0  
-20. LDA\_01: Closeness to LDA topic 1  
-21. LDA\_02: Closeness to LDA topic 2  
-22. LDA\_04: Closeness to LDA topic 4  
-23. global\_subjectivity: Text subjectivity  
-24. global\_sentiment\_polarity: Text sentiment polarity  
-25. rate\_negative\_words: Rate of negative words among non-neutral
+1.  num\_hrefs: Number of links  
+2.  data\_channel\_is\_entertainment: Is data channel ‘Entertainment’?  
+3.  data\_channel\_is\_socmed: Is data channel ‘Social Media’?  
+4.  data\_channel\_is\_tech: Is data channel ‘Tech’?  
+5.  data\_channel\_is\_world: Is data channel ‘World’?  
+6.  kw\_min\_min: Worst keyword (min. shares)  
+7.  kw\_min\_avg: Avg. keyword (min. shares)  
+8.  kw\_max\_avg: Avg. keyword (max. shares)  
+9.  kw\_avg\_avg: Avg. keyword (avg. shares)  
+10. LDA\_00: Closeness to LDA topic 0  
+11. LDA\_01: Closeness to LDA topic 1  
+12. LDA\_02: Closeness to LDA topic 2  
+13. LDA\_04: Closeness to LDA topic 4  
+14. global\_subjectivity: Text subjectivity  
+15. global\_sentiment\_polarity: Text sentiment polarity  
+16. rate\_negative\_words: Rate of negative words among non-neutral
     tokens  
-26. title\_subjectivity: Title subjectivity  
-27. shares: Number of shares (target)
+17. title\_subjectivity: Title subjectivity  
+18. shares: Number of shares (target)
 
 ## Purpose and Methods
 
@@ -79,20 +76,33 @@ where we got the data, I decided to use the same technique as Dr. Ren
 and Dr. Yang as discussed in [their
 paper](http://cs229.stanford.edu/proj2015/328_report.pdf). They
 calculated the Fisher score for each feature and selected the 20 with
-the highest Fisher scores. The Fisher score for the \(j^{\text{th}}\)
-feature is given by:  
-\[F(j) =  \frac{(\bar{x}^1_j - \bar{x}^2_j)^2}{(s^1_j)^2 + (s^2_j)^2},\]  
+the highest Fisher scores. The Fisher score for the
+![j^{\\text{th}}](https://latex.codecogs.com/png.latex?j%5E%7B%5Ctext%7Bth%7D%7D
+"j^{\\text{th}}") feature is given by:
+
+  
+![F(j) = \\frac{(\\bar{x}^1\_j - \\bar{x}^2\_j)^2}{(s^1\_j)^2 +
+(s^2\_j)^2},](https://latex.codecogs.com/png.latex?F%28j%29%20%3D%20%20%5Cfrac%7B%28%5Cbar%7Bx%7D%5E1_j%20-%20%5Cbar%7Bx%7D%5E2_j%29%5E2%7D%7B%28s%5E1_j%29%5E2%20%2B%20%28s%5E2_j%29%5E2%7D%2C
+"F(j) =  \\frac{(\\bar{x}^1_j - \\bar{x}^2_j)^2}{(s^1_j)^2 + (s^2_j)^2},")  
+  
 where  
-\[(s^k_j)^2 = \sum_{x \in X^k}(x_j - \bar{x}^k_j)^2\]
+  
+![(s^k\_j)^2 = \\sum\_{x \\in X^k}(x\_j -
+\\bar{x}^k\_j)^2](https://latex.codecogs.com/png.latex?%28s%5Ek_j%29%5E2%20%3D%20%5Csum_%7Bx%20%5Cin%20X%5Ek%7D%28x_j%20-%20%5Cbar%7Bx%7D%5Ek_j%29%5E2
+"(s^k_j)^2 = \\sum_{x \\in X^k}(x_j - \\bar{x}^k_j)^2")  
 
-The top variables with the highest Fisher scores were the following:  
-<img src="/Users/mana010/Downloads/fscores.png" width="570" /> All that
-being said, I used these 20 variables as my predictors in my models.
-This is also consistent with what we learned in the lectures about how
-many predictors to use in a regression tree, which is
-\(\frac{1}{3}(\text{# of predictors})\) = 20 in this case.
+The top variables with the highest Fisher scores were the following:
 
-## Data Partitioning
+<img src="/Users/mana010/Downloads/fscores.png" width="570" />
+
+All that being said, I used 17 of these 20 variables as my predictors in
+my models, since the `is_day` variables are irrelevant if we are doing
+the reports by day. This is also consistent with what we learned in the
+lectures about how many predictors to use in a regression tree, which is
+![\\frac{1}{3}](https://latex.codecogs.com/png.latex?%5Cfrac%7B1%7D%7B3%7D
+"\\frac{1}{3}")(\# of predictors) = 20 in this case.
+
+## Partitioning
 
 Before creating the models, we must split the data into a training and
 test data set in order to later evaluate the model’s prediction
@@ -100,7 +110,7 @@ accuracy. In this case we will be using a 70/30 split, training the data
 on the 70% and testing the trained models on the 30%.
 
 ``` r
-vars <- c(7, 14, 16:19, 25:27, 36:41, 43:45, 49, 56, 60)
+vars <- c(7, 14, 16:19, 25:27, 39:41, 43:45, 49, 56, 60)
 index <- createDataPartition(day.dat$shares, p = .7, list = F) %>% as.vector()
 train <- day.dat[index,vars]
 test <- day.dat[-index,vars]
@@ -125,7 +135,8 @@ training data.
 ![](AzizProj2_files/figure-gfm/sctrs-1.png)<!-- -->
 
 Then I looked at the numeric summaries of some of the quantitative
-variables as well as contingency tables of the qualitative variables.
+variables as well as contingency tables of the qualitative variables. I
+wanted to get an idea of the range and distribution of the variables.
 
     ##    num_hrefs        kw_avg_avg        LDA_02        global_subjectivity
     ##  Min.   :  0.00   Min.   :    0   Min.   :0.01819   Min.   :0.0000     
@@ -142,10 +153,10 @@ variables as well as contingency tables of the qualitative variables.
     ##  3rd Qu.: 0.17562         
     ##  Max.   : 0.56667
 
-|   | is ent. | is soc. med. | is tech | is world |
-| :- | ------: | -----------: | ------: | -------: |
-| 0 |    3731 |         4440 |    3793 |     3702 |
-| 1 |     933 |          224 |     871 |      962 |
+|     | is ent. | is soc. med. | is tech | is world |
+| :-- | ------: | -----------: | ------: | -------: |
+| No  |    3731 |         4440 |    3793 |     3702 |
+| Yes |     933 |          224 |     871 |      962 |
 
 # Modeling
 
@@ -205,221 +216,6 @@ trctrl2 <- trainControl(method = "cv", number = 5)
 boostFit <- train(shares ~., data = train, method = "gbm",
                   trControl = trctrl2, preProcess = c("center", "scale"),
                   verbose = FALSE)
-```
-
-    ## Warning in preProcess.default(method = c("center", "scale"), x =
-    ## structure(c(3, : These variables have zero variances: weekday_is_saturday,
-    ## weekday_is_sunday, is_weekend
-
-    ## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19,
-    ## uniqueCut = 10, : These variables have zero variances: weekday_is_saturday,
-    ## weekday_is_sunday, is_weekend
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 10: weekday_is_saturday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 11: weekday_is_sunday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 12: is_weekend has no variation.
-
-    ## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19,
-    ## uniqueCut = 10, : These variables have zero variances: weekday_is_saturday,
-    ## weekday_is_sunday, is_weekend
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 10: weekday_is_saturday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 11: weekday_is_sunday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 12: is_weekend has no variation.
-
-    ## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19,
-    ## uniqueCut = 10, : These variables have zero variances: weekday_is_saturday,
-    ## weekday_is_sunday, is_weekend
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 10: weekday_is_saturday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 11: weekday_is_sunday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 12: is_weekend has no variation.
-
-    ## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19,
-    ## uniqueCut = 10, : These variables have zero variances: weekday_is_saturday,
-    ## weekday_is_sunday, is_weekend
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 10: weekday_is_saturday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 11: weekday_is_sunday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 12: is_weekend has no variation.
-
-    ## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19,
-    ## uniqueCut = 10, : These variables have zero variances: weekday_is_saturday,
-    ## weekday_is_sunday, is_weekend
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 10: weekday_is_saturday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 11: weekday_is_sunday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 12: is_weekend has no variation.
-
-    ## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19,
-    ## uniqueCut = 10, : These variables have zero variances: weekday_is_saturday,
-    ## weekday_is_sunday, is_weekend
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 10: weekday_is_saturday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 11: weekday_is_sunday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 12: is_weekend has no variation.
-
-    ## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19,
-    ## uniqueCut = 10, : These variables have zero variances: weekday_is_saturday,
-    ## weekday_is_sunday, is_weekend
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 10: weekday_is_saturday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 11: weekday_is_sunday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 12: is_weekend has no variation.
-
-    ## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19,
-    ## uniqueCut = 10, : These variables have zero variances: weekday_is_saturday,
-    ## weekday_is_sunday, is_weekend
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 10: weekday_is_saturday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 11: weekday_is_sunday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 12: is_weekend has no variation.
-
-    ## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19,
-    ## uniqueCut = 10, : These variables have zero variances: weekday_is_saturday,
-    ## weekday_is_sunday, is_weekend
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 10: weekday_is_saturday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 11: weekday_is_sunday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 12: is_weekend has no variation.
-
-    ## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19,
-    ## uniqueCut = 10, : These variables have zero variances: weekday_is_saturday,
-    ## weekday_is_sunday, is_weekend
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 10: weekday_is_saturday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 11: weekday_is_sunday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 12: is_weekend has no variation.
-
-    ## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19,
-    ## uniqueCut = 10, : These variables have zero variances: weekday_is_saturday,
-    ## weekday_is_sunday, is_weekend
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 10: weekday_is_saturday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 11: weekday_is_sunday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 12: is_weekend has no variation.
-
-    ## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19,
-    ## uniqueCut = 10, : These variables have zero variances: weekday_is_saturday,
-    ## weekday_is_sunday, is_weekend
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 10: weekday_is_saturday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 11: weekday_is_sunday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 12: is_weekend has no variation.
-
-    ## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19,
-    ## uniqueCut = 10, : These variables have zero variances: weekday_is_saturday,
-    ## weekday_is_sunday, is_weekend
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 10: weekday_is_saturday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 11: weekday_is_sunday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 12: is_weekend has no variation.
-
-    ## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19,
-    ## uniqueCut = 10, : These variables have zero variances: weekday_is_saturday,
-    ## weekday_is_sunday, is_weekend
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 10: weekday_is_saturday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 11: weekday_is_sunday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 12: is_weekend has no variation.
-
-    ## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19,
-    ## uniqueCut = 10, : These variables have zero variances: weekday_is_saturday,
-    ## weekday_is_sunday, is_weekend
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 10: weekday_is_saturday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 11: weekday_is_sunday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 12: is_weekend has no variation.
-
-    ## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19,
-    ## uniqueCut = 10, : These variables have zero variances: weekday_is_saturday,
-    ## weekday_is_sunday, is_weekend
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 10: weekday_is_saturday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 11: weekday_is_sunday has no variation.
-
-    ## Warning in (function (x, y, offset = NULL, misc = NULL, distribution =
-    ## "bernoulli", : variable 12: is_weekend has no variation.
-
-``` r
 boostPred <- predict(boostFit, newdata = test)
 boostRMSE <- sqrt(mean((boostPred-test$shares)^2))
 ```
@@ -440,7 +236,7 @@ following tune of the parameters:
 Comparison of Models’ RMSE
 
 After evaluating the predictions of the test data set from each model,
-the basic regression tree had an RMSE of 1.045519510^{4} and the boosted
-tree model had an RMSE of 7888.1023407. I expected the boosted tree to
-have a lower RMSE, since we learned that ensemble trees tend to
-outperform single trees in terms of prediction.
+the basic regression tree had an RMSE of 1.045510^{4} and the boosted
+tree model had an RMSE of 7888. I expected the boosted tree to have a
+lower RMSE, since we learned that ensemble trees tend to outperform
+single trees in terms of prediction.
