@@ -93,7 +93,7 @@ where
 
 The top variables with the highest Fisher scores were the following:
 
-<img src="fscores.png" width="570" />
+![](fscores.png)<!-- -->
 
 All that being said, I used 17 of these 20 variables as my predictors in
 my models, since the `is_day` variables are irrelevant if we are doing
@@ -133,13 +133,27 @@ Then I looked at the numeric summaries of some of the quantitative
 variables as well as contingency tables of the qualitative variables. I
 wanted to get an idea of the range and distribution of the variables.
 
-    ##    num_hrefs        kw_avg_avg        LDA_02        global_subjectivity global_sentiment_polarity
-    ##  Min.   :  0.00   Min.   : 1106   Min.   :0.01818   Min.   :0.0000      Min.   :-0.3000          
-    ##  1st Qu.:  5.00   1st Qu.: 2505   1st Qu.:0.02500   1st Qu.:0.3981      1st Qu.: 0.0621          
-    ##  Median :  9.00   Median : 3063   Median :0.03335   Median :0.4612      Median : 0.1217          
-    ##  Mean   : 12.66   Mean   : 3293   Mean   :0.20193   Mean   :0.4486      Mean   : 0.1262          
-    ##  3rd Qu.: 17.00   3rd Qu.: 3854   3rd Qu.:0.31568   3rd Qu.:0.5160      3rd Qu.: 0.1883          
-    ##  Max.   :153.00   Max.   :15336   Max.   :0.92000   Max.   :0.9125      Max.   : 0.6317
+    ##    num_hrefs        kw_avg_avg   
+    ##  Min.   :  0.00   Min.   : 1106  
+    ##  1st Qu.:  5.00   1st Qu.: 2505  
+    ##  Median :  9.00   Median : 3063  
+    ##  Mean   : 12.66   Mean   : 3293  
+    ##  3rd Qu.: 17.00   3rd Qu.: 3854  
+    ##  Max.   :153.00   Max.   :15336  
+    ##      LDA_02        global_subjectivity
+    ##  Min.   :0.01818   Min.   :0.0000     
+    ##  1st Qu.:0.02500   1st Qu.:0.3981     
+    ##  Median :0.03335   Median :0.4612     
+    ##  Mean   :0.20193   Mean   :0.4486     
+    ##  3rd Qu.:0.31568   3rd Qu.:0.5160     
+    ##  Max.   :0.92000   Max.   :0.9125     
+    ##  global_sentiment_polarity
+    ##  Min.   :-0.3000          
+    ##  1st Qu.: 0.0621          
+    ##  Median : 0.1217          
+    ##  Mean   : 0.1262          
+    ##  3rd Qu.: 0.1883          
+    ##  Max.   : 0.6317
 
 |     | is ent. | is soc. med. | is tech | is world |
 | :-- | ------: | -----------: | ------: | -------: |
@@ -211,20 +225,39 @@ boostRMSE <- sqrt(mean((boostPred-test$shares)^2))
 The final boosted tree model that I selected was the model with the
 following tune of the parameters:
 
-    ##   n.trees interaction.depth shrinkage n.minobsinnode
-    ## 4      50                 2       0.1             10
+    ##   n.trees interaction.depth shrinkage
+    ## 4      50                 2       0.1
+    ##   n.minobsinnode
+    ## 4             10
+
+## Linear Regression
+
+Fit a linear regression model. Find predictions on the test set and the
+RMSE.
+
+``` r
+linFit <- train(shares ~ ., 
+                data = train, 
+                method = "lm", 
+                preProcess = c("center", "scale")) 
+
+linPred <- predict(linFit, newdata = test)
+
+linRMSE <- sqrt(mean((linPred-test$shares)^2))
+```
 
 ## Model Comparison
 
-|            |     RMSE |
-| :--------- | -------: |
-| Reg. Tree  | 6641.181 |
-| Boost Tree | 6669.270 |
+|                   |     RMSE |
+| :---------------- | -------: |
+| Reg. Tree         | 6641.181 |
+| Boost Tree        | 6669.270 |
+| Linear Regression | 6533.372 |
 
 Comparison of Models’ RMSE
 
 After evaluating the predictions of the test data set from each model,
 the basic regression tree had an RMSE of 6641 and the boosted tree model
-had an RMSE of 6669. I expected the boosted tree to have a lower RMSE,
-since we learned that ensemble trees tend to outperform single trees in
-terms of prediction.
+had an RMSE of 6669. The linear regression model had a RMSE of 6533. I
+expected the boosted tree to have a lower RMSE, since we learned that
+ensemble trees tend to outperform single trees in terms of prediction.
