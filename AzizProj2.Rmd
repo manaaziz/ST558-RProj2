@@ -176,12 +176,27 @@ The final boosted tree model that I selected was the model with the following tu
 boostFit$bestTune
 ```  
 
+## Linear Regression
+
+Fit a linear regression model. Find predictions on the test set and the RMSE. 
+
+```{r Linear Regression}
+linFit <- train(shares ~ ., 
+                data = train, 
+                method = "lm", 
+                preProcess = c("center", "scale")) 
+
+linPred <- predict(linFit, newdata = test)
+
+linRMSE <- sqrt(mean((linPred-test$shares)^2))
+```
+
 ## Model Comparison  
 ```{r RMSEtbl, echo=FALSE}
-tbl.rmse <- rbind.data.frame("tree" = treeRMSE, "boost" = boostRMSE)
+tbl.rmse <- rbind.data.frame("tree" = treeRMSE, "boost" = boostRMSE, "linear regression" = linRMSE)
 colnames(tbl.rmse) <- "RMSE"
-rownames(tbl.rmse) <- c("Reg. Tree", "Boost Tree")
+rownames(tbl.rmse) <- c("Reg. Tree", "Boost Tree", "Linear Regression")
 kable(tbl.rmse, caption = "Comparison of Models' RMSE")
 ```  
-After evaluating the predictions of the test data set from each model, the basic regression tree had an RMSE of `r round(tbl.rmse[1,1])` and the boosted tree model had an RMSE of `r round(tbl.rmse[2,1])`. I expected the boosted tree to have a lower RMSE, since we learned that ensemble trees tend to outperform single trees in terms of prediction.
+After evaluating the predictions of the test data set from each model, the basic regression tree had an RMSE of `r round(tbl.rmse[1,1])` and the boosted tree model had an RMSE of `r round(tbl.rmse[2,1])`. The linear regression model had a RMSE of `r round(tbl.rmse[3,1])`. I expected the boosted tree to have a lower RMSE, since we learned that ensemble trees tend to outperform single trees in terms of prediction.
 

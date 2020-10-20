@@ -9,7 +9,7 @@ This repository is for the second project of ST558 where we are to use two tree-
   * [Tuesday](tuesdayAnalysis.md)  
   * [Wednesday](wednesdayAnalysis.md)  
   * [Thursday](thursdayAnalysis.md)  
-  * [Friday](fridaydayAnalysis.md)  
+  * [Friday](fridayAnalysis.md)  
   * [Saturday](saturdayAnalysis.md)  
   * [Sunday](sundayAnalysis.md)    
 
@@ -34,3 +34,4 @@ params = lapply(dayofweek, FUN = function(x){list(day = x)})
 reports <- tibble(output_file, params)
 apply(reports, MARGIN = 1, FUN = function(x){render(input = "AzizProj2.Rmd", output_file = x[[1]], params = x[[2]])})
 ```
+
